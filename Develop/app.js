@@ -4,23 +4,23 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-const prompts = require("./prompts.js");
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const Employee = require("./lib/Employee")
-const render = require("./lib/htmlRenderer");
 const { Console } = require("console");
+const render = require("./lib/htmlRenderer");
+const renderhtml = require("./lib/htmlRenderer");
 
 var team = []
 
 //add new members
 function addMember() {
-   return inquirer.prompt([
+   inquirer.prompt([
         {
             type: "list",
-            name: "position",
+            name: "role",
             message: "Which emplyee would you like to add?",
-            choices: ["Employee", "Engineer", "Intern", "Manager", "None"],
+            choices: ["Employee", "Engineer", "Intern", "Manager", "Done entering"],
         },
     ]).then (function (answers) {
             switch (answers.role) {
@@ -32,9 +32,10 @@ function addMember() {
                     break;
                 case "Manager": promptManager();
                     break;
-                case "None": console.log(JSON.stringify(team));
+                case "Done entering": console.log("Complete!")
                     fs.writeFile(outputPath, render(team), "utf-8", (err) => {
                         if (err) throw err;
+                        console.log(err);
                     });
             }
         });
@@ -44,7 +45,7 @@ function promptEmployee() {
     inquirer.prompt([{
         type: "input",
         name: "name",
-        message: "What is the name for the new engineer?",
+        message: "What is the name for the new employee?",
     },
     {
         type: "input",
@@ -59,13 +60,14 @@ function promptEmployee() {
 
     ])
         .then(function (answers) {
-            const Employee = new Employee(
-                userResponse.name,
-                userResponse.id,
-                userResponse.email,
-                userResponse.gihub
+            const employee = new Employee(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.gihub
+                
             );
-            team.push(Employee);
+            team.push(employee);
         })
         .then(function newMember() {
             console.log("Add another member?");
@@ -98,13 +100,13 @@ function promptEngineer() {
 
     ])
         .then(function (answers) {
-            const Engineer = new Engineer(
-                userResponse.name,
-                userResponse.id,
-                userResponse.email,
-                userResponse.gihub
+            const engineer = new Engineer(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.gihub
             );
-            team.push(Engineer);
+            team.push(engineer);
         })
         .then(function newMember() {
             console.log("Add another member?");
@@ -137,13 +139,13 @@ function promptIntern() {
 
     ])
         .then(function (answers) {
-            const Intern = new Intern(
-                userResponse.name,
-                userResponse.id,
-                userResponse.email,
-                userResponse.school
+            const intern = new Intern(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.school
             );
-            team.push(Intern);
+            team.push(intern);
         })
         .then(function newMember() {
             console.log("Add another member?");
@@ -177,13 +179,13 @@ function promptManager() {
 
     ])
         .then(function (answers) {
-            const Manager = new Manager(
-                userResponse.name,
-                userResponse.id,
-                userResponse.email,
-                userResponse.number
+            const manager = new Manager(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.number
             );
-            team.push(Manager);
+            team.push(manager);
         })
         .then(function newMember() {
             console.log("Add another member?");
